@@ -7,6 +7,7 @@
 
 <%
 	local ver = require "luci.version"
+	local dev = require "luci.deviceInfo"
 	local disp = require "luci.dispatcher"
 	local request  = disp.context.path
 	local category = request[1]
@@ -14,7 +15,7 @@
 	local categories = disp.node_childs(tree)
 %>
    <footer>
-    <a href="https://icont.co.in">Powered by <%= deviceInfo.company%> / <%= deviceInfo.productName %> /a> - <%= deviceInfo.FwVersion %>
+    <a href="https://icont.co.in">Powered by <%= dev.company%> / <%= dev.productName %> /a> - <%= dev.FwVersion %>
     <% if #categories > 1 then %>
      <ul class="breadcrumb pull-right" id="modemenu">
 	    <% for i, r in ipairs(categories) do %>
