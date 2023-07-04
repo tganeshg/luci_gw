@@ -181,7 +181,7 @@
 			var ifc = info.wan || {};
 
 			us.appendChild(renderBox(
-				'<%:IPv4 Upstream%>',
+				'<%:WAN - PPP%>',
 				(ifc.ifname && ifc.proto != 'none'),
 				[ E('div', {}, renderBadge(
 					'<%=resource%>/icons/%s.png'.format((ifc && ifc.type) ? ifc.type : 'ethernet_disabled'), null,
@@ -199,27 +199,26 @@
 				'<%:Expires%>', (ifc.expires > -1) ? '%t'.format(ifc.expires) : null,
 				'<%:Connected%>', (ifc.uptime > 0) ? '%t'.format(ifc.uptime) : null));
 
-			<% if has_ipv6 then %>
-			var ifc6 = info.wan6 || {};
+			var ifcLan = info.lan || {};
 
 			us.appendChild(renderBox(
-				'<%:IPv6 Upstream%>',
-				(ifc6.ifname && ifc6.proto != 'none'),
+				'<%:LAN%>',
+				(ifcLan.ifname && ifcLan.proto != 'none'),
 				[ E('div', {}, renderBadge(
-					'<%=resource%>/icons/%s.png'.format(ifc6.type || 'ethernet_disabled'), null,
-					'<%:Device%>', ifc6 ? (ifc6.name || ifc6.ifname || '-') : '-',
-					'<%:MAC-Address%>', (ifc6 && ifc6.ether) ? ifc6.mac : null)) ],
-				'<%:Protocol%>', ifc6.i18n ? (ifc6.i18n + (ifc6.proto === 'dhcp' && ifc6.ip6prefix ? '-PD' : '')) : E('em', '<%:Not connected%>'),
-				'<%:Prefix Delegated%>', ifc6.ip6prefix,
-				'<%:Address%>', (ifc6.ip6prefix) ? (ifc6.ip6addr || null) : (ifc6.ip6addr || '::'),
-				'<%:Gateway%>', (ifc6.gw6addr) ? ifc6.gw6addr : '::',
-				'<%:DNS%> 1', (ifc6.dns) ? ifc6.dns[0] : null,
-				'<%:DNS%> 2', (ifc6.dns) ? ifc6.dns[1] : null,
-				'<%:DNS%> 3', (ifc6.dns) ? ifc6.dns[2] : null,
-				'<%:DNS%> 4', (ifc6.dns) ? ifc6.dns[3] : null,
-				'<%:DNS%> 5', (ifc6.dns) ? ifc6.dns[4] : null,
-				'<%:Connected%>', (ifc6.uptime > 0) ? '%t'.format(ifc6.uptime) : null));
-			<% end %>
+					'<%=resource%>/icons/%s.png'.format((ifcLan && ifcLan.type) ? ifcLan.type : 'ethernet_disabled'), null,
+					'<%:Device%>', ifcLan ? (ifcLan.name || ifcLan.ifname || '-') : '-',
+					'<%:MAC-Address%>', (ifcLan && ifcLan.ether) ? ifcLan.mac : null)) ],
+				'<%:Protocol%>', ifcLan.i18n || E('em', '<%:Not connected%>'),
+				'<%:Address%>', (ifcLan.ipaddr) ? ifcLan.ipaddr : '0.0.0.0',
+				'<%:Netmask%>', (ifcLan.netmask && ifcLan.netmask != ifcLan.ipaddr) ? ifcLan.netmask : '255.255.255.255',
+				'<%:Gateway%>', (ifcLan.gwaddr) ? ifcLan.gwaddr : '0.0.0.0',
+				'<%:DNS%> 1', (ifcLan.dns) ? ifcLan.dns[0] : null,
+				'<%:DNS%> 2', (ifcLan.dns) ? ifcLan.dns[1] : null,
+				'<%:DNS%> 3', (ifcLan.dns) ? ifcLan.dns[2] : null,
+				'<%:DNS%> 4', (ifcLan.dns) ? ifcLan.dns[3] : null,
+				'<%:DNS%> 5', (ifcLan.dns) ? ifcLan.dns[4] : null,
+				'<%:Expires%>', (ifcLan.expires > -1) ? '%t'.format(ifcLan.expires) : null,
+				'<%:Connected%>', (ifcLan.uptime > 0) ? '%t'.format(ifcLan.uptime) : null));
 
 			<% if has_dsl then %>
 				var ds = document.getElementById('dsl_status_table');
@@ -318,47 +317,6 @@
 			if (e = document.getElementById('uptime'))
 				e.innerHTML = String.format('%t', info.uptime);
 
-			if (e = document.getElementById('loadavg'))
-				e.innerHTML = String.format(
-					'%.02f, %.02f, %.02f',
-					info.loadavg[0] / 65535.0,
-					info.loadavg[1] / 65535.0,
-					info.loadavg[2] / 65535.0
-				);
-
-			if (e = document.getElementById('memtotal'))
-				e.innerHTML = progressbar(
-					((info.memory.free + info.memory.buffered) / 1024) + " <%:kB%>",
-					(info.memory.total / 1024) + " <%:kB%>"
-				);
-
-			if (e = document.getElementById('memfree'))
-				e.innerHTML = progressbar(
-					(info.memory.free / 1024) + " <%:kB%>",
-					(info.memory.total / 1024) + " <%:kB%>"
-				);
-
-			if (e = document.getElementById('membuff'))
-				e.innerHTML = progressbar(
-					(info.memory.buffered / 1024) + " <%:kB%>",
-					(info.memory.total / 1024) + " <%:kB%>"
-				);
-
-			if (e = document.getElementById('swaptotal'))
-				e.innerHTML = progressbar(
-					(info.swap.free / 1024) + " <%:kB%>",
-					(info.swap.total / 1024) + " <%:kB%>"
-				);
-
-			if (e = document.getElementById('swapfree'))
-				e.innerHTML = progressbar(
-					(info.swap.free / 1024) + " <%:kB%>",
-					(info.swap.total / 1024) + " <%:kB%>"
-				);
-
-			if (e = document.getElementById('conns'))
-				e.innerHTML = progressbar(info.conncount, info.connmax);
-
 		}
 	);
 //]]></script>
@@ -385,27 +343,7 @@
 	<div id="upstream_status_table" class="network-status-table">
 		<p><em><%:Collecting data...%></em></p>
 	</div>
-
-	<div class="table" width="100%">
-		<div class="tr"><div class="td left" width="33%"><%:Active Connections%></div><div class="td left" id="conns">-</div></div>
-	</div>
 </div>
-
-<%
-	if has_dhcp then
-		include("admin_network/lease_status")
-	end
-%>
-
-<% if has_dsl then %>
-<div class="cbi-section">
-	<h3><%:DSL%></h3>
-
-	<div id="dsl_status_table" class="network-status-table">
-		<p><em><%:Collecting data...%></em></p>
-	</div>
-</div>
-<% end %>
 
 <% if has_wifi then %>
 <div class="cbi-section">
@@ -420,6 +358,22 @@
 	<h3><%:Associated Stations%></h3>
 
 	<%+admin_network/wifi_assoclist%>
+</div>
+<% end %>
+
+<%
+	if has_dhcp then
+		include("admin_network/lease_status")
+	end
+%>
+
+<% if has_dsl then %>
+<div class="cbi-section">
+	<h3><%:DSL%></h3>
+
+	<div id="dsl_status_table" class="network-status-table">
+		<p><em><%:Collecting data...%></em></p>
+	</div>
 </div>
 <% end %>
 
