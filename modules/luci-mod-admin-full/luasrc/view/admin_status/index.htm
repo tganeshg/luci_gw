@@ -54,7 +54,8 @@
 			swap       = swapinfo,
 			connmax    = conn_max,
 			conncount  = conn_count,
-			wifinets   = stat.wifi_networks()
+			wifinets   = stat.wifi_networks(),
+			mStats     = stat.getSimStatus()
 		}
 
 		if wan then
@@ -317,6 +318,44 @@
 			if (e = document.getElementById('uptime'))
 				e.innerHTML = String.format('%t', info.uptime);
 
+			if (e = document.getElementById('Smstatus'))
+				e.innerHTML = info.mStats[0].SmStat;
+
+			if (e = document.getElementById('Ntwtatus'))
+				e.innerHTML = info.mStats[0].NwStat;
+
+			if (e = document.getElementById('sigStr'))
+			{
+				var icon;
+				var q = (info.mStats[0].SgStr);
+				if (q == 0)
+					icon = "<%=resource%>/icons/signal-0.png";
+				else if (q < 8)
+					icon = "<%=resource%>/icons/signal-0-25.png";
+				else if (q < 16)
+					icon = "<%=resource%>/icons/signal-25-50.png";
+				else if (q < 24)
+					icon = "<%=resource%>/icons/signal-50-75.png";
+				else if (q > 23 && q < 33)
+					icon = "<%=resource%>/icons/signal-75-100.png";
+				else
+					icon = "<%=resource%>/icons/signal-none.png";
+
+				e.innerHTML = String.format( '%s	<img src="%s"/>',info.mStats[0].SgStr,icon);
+			}
+
+			if (e = document.getElementById('oprName'))
+				e.innerHTML = info.mStats[0].OptrName;
+
+			if (e = document.getElementById('regIn'))
+				e.innerHTML = info.mStats[0].SmRegIn;
+
+			if (e = document.getElementById('IMei'))
+				e.innerHTML = info.mStats[0].ImeI;
+
+			if (e = document.getElementById('IMsi'))
+				e.innerHTML = info.mStats[0].ImsI;
+
 		}
 	);
 //]]></script>
@@ -324,7 +363,7 @@
 <h2 name="content"><%:Status%></h2>
 
 <div class="cbi-section">
-	<h3><%:System%></h3>
+	<h3><%:Product%></h3>
 
 	<div class="table" width="100%">
 		<div class="tr"><div class="td left" width="33%"><%:Name%></div><div class="td left"><%=devInfo.productName or "?"%></div></div>
@@ -334,6 +373,20 @@
 		<div class="tr"><div class="td left" width="33%"><%:Kernel Version%></div><div class="td left"><%=unameinfo.release or "?"%></div></div>
 		<div class="tr"><div class="td left" width="33%"><%:Local Time%></div><div class="td left" id="localtime">-</div></div>
 		<div class="tr"><div class="td left" width="33%"><%:Uptime%></div><div class="td left" id="uptime">-</div></div>
+	</div>
+</div>
+
+<div class="cbi-section">
+	<h3><%:Cellular%></h3>
+
+	<div class="table" width="100%">
+		<div class="tr"><div class="td left" width="33%"><%:SIM Status%></div><div class="td left" id="Smstatus"><%:Collecting data...%></div></div>
+		<div class="tr"><div class="td left" width="33%"><%:Network Status%></div><div class="td left" id="Ntwtatus"><%:Collecting data...%></div></div>
+		<div class="tr"><div class="td left" width="33%"><%:Signal Strength%></div><div class="td left" id="sigStr"><%:Collecting data...%></div></div>
+		<div class="tr"><div class="td left" width="33%"><%:Operator Name%></div><div class="td left" id="oprName"><%:Collecting data...%></div></div>
+		<div class="tr"><div class="td left" width="33%"><%:Registered In%></div><div class="td left" id="regIn"><%:Collecting data...%></div></div>
+		<div class="tr"><div class="td left" width="33%"><%:IMEI%></div><div class="td left" id="IMei"><%:Collecting data...%></div></div>
+		<div class="tr"><div class="td left" width="33%"><%:IMSI%></div><div class="td left" id="IMsi"><%:Collecting data...%></div></div>
 	</div>
 </div>
 

@@ -303,3 +303,26 @@ function switch_status(devs)
 	end
 	return switches
 end
+
+--[[By ganesh]]
+function getSimStatus()
+	local riv = { }
+	local stat1 = uci:get("modemStat","modem","simSts")
+	local stat2 = uci:get("modemStat","modem","netSts")
+	local stat3 = uci:get("modemStat","modem","sigStr")
+	local stat4 = uci:get("modemStat","modem","optName")
+	local stat5 = uci:get("modemStat","modem","simRegIn")
+	local stat6 = uci:get("modemStat","modem","simImei")
+	local stat7 = uci:get("modemStat","modem","simImsi")
+
+	riv[#riv+1] = {
+		SmStat = (type(stat1) == "string") and stat1 or "Loading...",
+		NwStat = (type(stat2) == "string") and stat2 or "Loading...",
+		SgStr = (type(stat3) == "string") and stat3 or "Loading...",
+		OptrName = (type(stat4) == "string") and stat4 or "Loading...",
+		SmRegIn = (type(stat5) == "string") and stat5 or "Loading...",
+		ImeI = (type(stat6) == "string") and stat6 or "Loading...",
+		ImsI = (type(stat7) == "string") and stat7 or "Loading..."
+	}
+	return riv
+end
